@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 import {
   ImageIcon,
   FileEdit,
@@ -9,8 +10,19 @@ import {
   AlignLeft,
   Layers,
   ChevronRight,
+  MonitorDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+// PWAインストールプロンプト用の型定義
+interface BeforeInstallPromptEvent extends Event {
+  readonly platforms: string[];
+  readonly userChoice: Promise<{
+    outcome: "accepted" | "dismissed";
+    platform: string;
+  }>;
+  prompt(): Promise<void>;
+}
 
 const tools = [
   {
@@ -49,6 +61,36 @@ const tools = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [isInstallable, setIsInstallable] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
+      setIsInstallable(true);
+    };
+    const handleAppInstalled = () => {
+      setDeferredPrompt(null);
+      setIsInstallable(false);
+    };
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", handleAppInstalled);
+    };
+  }, []);
+
+  const handleInstallPWA = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === "accepted") {
+      setDeferredPrompt(null);
+      setIsInstallable(false);
+    }
+  };
 
   return (
     <aside className="w-64 min-h-screen flex flex-col bg-zinc-900/80 border-r border-zinc-800 backdrop-blur-sm">
@@ -111,7 +153,16 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="px-4 py-3 border-t border-zinc-800">
+      <div className="px-3 py-3 border-t border-zinc-800 space-y-2">
+        {isInstallable && (
+          <button
+            onClick={handleInstallPWA}
+            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-bold py-2.5 px-3 rounded-xl transition-all shadow-lg shadow-indigo-900/30 text-xs ring-1 ring-indigo-500/40 animate-in fade-in zoom-in duration-300"
+          >
+            <MonitorDown className="w-4 h-4" />
+            デスクトップアプリとして保存
+          </button>
+        )}
         <p className="text-[10px] text-zinc-600 text-center">
           すべての処理はブラウザ完結 🔒
         </p>

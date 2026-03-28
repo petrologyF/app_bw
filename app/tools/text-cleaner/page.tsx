@@ -176,14 +176,15 @@ export default function TextCleanerPage() {
   const removedChars = input.length - output.length;
 
   return (
-    <div className="p-4 md:p-6 h-[calc(100vh-0px)] flex flex-col gap-4 overflow-hidden">
+    <div className="p-4 md:p-6 w-full max-w-[1400px] mx-auto h-screen flex flex-col space-y-6 overflow-hidden">
       {/* Header */}
-      <div>
+      <div className="mb-2">
         <h2 className="text-2xl font-extrabold text-white bg-gradient-to-r from-teal-400 to-cyan-400 text-transparent bg-clip-text">
           Text Cleaner
         </h2>
         <p className="text-zinc-400 text-sm mt-0.5">テキストの整形・クリーニングを一括適用</p>
       </div>
+      <Separator className="bg-zinc-800/50" />
 
       <div className="flex-1 min-h-0 grid grid-cols-1 xl:grid-cols-[280px_1fr_1fr] gap-4 overflow-hidden">
         {/* Options panel */}

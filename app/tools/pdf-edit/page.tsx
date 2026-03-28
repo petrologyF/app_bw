@@ -13,7 +13,9 @@ import {
   Loader2, 
   GripVertical,
   CheckCircle2,
-  ArrowRight
+  ArrowRight,
+  Copy,
+  Check
 } from "lucide-react";
 import { PDFDocument } from "pdf-lib";
 import { Button } from "@/components/ui/button";
@@ -62,6 +64,7 @@ export default function PdfEditPage() {
   const [imgPageCount, setImgPageCount] = useState(0);
   const [imgScale, setImgScale] = useState(2);
   const [imgResults, setImgResults] = useState<PageImage[]>([]);
+  const [copiedPage, setCopiedPage] = useState<number | null>(null);
   const imgInputRef = useRef<HTMLInputElement>(null);
 
   // Helper: File Size Check
@@ -246,14 +249,27 @@ export default function PdfEditPage() {
     }
   };
 
+  const handleCopyPage = async (dataUrl: string, pageNum: number) => {
+    try {
+      const response = await fetch(dataUrl);
+      const blob = await response.blob();
+      const item = new ClipboardItem({ 'image/png': blob });
+      await navigator.clipboard.write([item]);
+      setCopiedPage(pageNum);
+      setTimeout(() => setCopiedPage(null), 2000);
+    } catch {
+      setError("画像のコピーに失敗しました。");
+    }
+  };
+
   return (
-    <div className="p-4 md:p-6 max-w-4xl mx-auto space-y-8">
+    <div className="p-4 md:p-6 w-full max-w-[1400px] mx-auto space-y-6">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h2 className="text-3xl font-black text-white bg-gradient-to-r from-blue-400 to-indigo-500 text-transparent bg-clip-text">
+        <div className="mb-2">
+          <h2 className="text-2xl font-extrabold text-white bg-gradient-to-r from-amber-400 to-orange-400 text-transparent bg-clip-text">
             Edit PDF
           </h2>
-          <p className="text-zinc-500 text-sm mt-1">PDFの抽出・結合・画像化を高度に処理（最大100MB）</p>
+          <p className="text-zinc-400 text-sm mt-0.5">PDFの抽出・結合・画像化（最大80MB）</p>
         </div>
         <Tabs defaultValue="split" onValueChange={setActiveTab} className="w-full md:w-auto">
           <TabsList className="bg-zinc-900 border border-zinc-800 p-1 rounded-xl">
@@ -464,15 +480,31 @@ export default function PdfEditPage() {
             )}
 
             {imgResults.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
                 {imgResults.map(r => (
                   <div key={r.page} className="group relative aspect-[3/4] rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900/80">
                     <img src={r.dataUrl} alt={`Page ${r.page}`} className="w-full h-full object-contain p-2" />
-                    <div className="absolute inset-0 bg-zinc-950/80 flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                       <a href={r.dataUrl} download={`page_${r.page}.png`} className="p-3 bg-white/10 hover:bg-white/20 rounded-xl text-white">
-                          <Download className="w-5 h-5" />
-                       </a>
-                       <span className="text-[10px] text-white/50 font-bold tracking-widest">PAGE {r.page}</span>
+                    <div className="absolute inset-0 bg-zinc-950/80 flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-all px-2">
+                       <div className="flex gap-2">
+                         <button
+                           onClick={() => handleCopyPage(r.dataUrl, r.page)}
+                           className="p-3 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-colors"
+                           title="Copy Image"
+                         >
+                           {copiedPage === r.page ? <Check className="w-5 h-5 text-emerald-400" /> : <Copy className="w-5 h-5" />}
+                         </button>
+                         <a 
+                           href={r.dataUrl} 
+                           download={`page_${r.page}.png`} 
+                           className="p-3 bg-white/10 hover:bg-white/20 rounded-xl text-white"
+                           title="Download PNG"
+                         >
+                            <Download className="w-5 h-5" />
+                         </a>
+                       </div>
+                       <span className="text-[10px] text-white/50 font-bold tracking-widest uppercase">
+                         {copiedPage === r.page ? "Copied!" : `PAGE ${r.page}`}
+                       </span>
                     </div>
                   </div>
                 ))}

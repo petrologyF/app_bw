@@ -60,7 +60,8 @@ export default function BarcodePage() {
   const [fgColor, setFgColor] = useState("#000000");
   const [bgColor, setBgColor] = useState("#ffffff");
   const [error, setError] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState(false); // For text copy
+  const [pngCopied, setPngCopied] = useState(false); // For image copy
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -134,7 +135,6 @@ export default function BarcodePage() {
     const timer = setTimeout(generateBarcode, 300);
     return () => clearTimeout(timer);
   }, [generateBarcode]);
-
   const handleDownloadPng = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -143,6 +143,24 @@ export default function BarcodePage() {
     a.href = url;
     a.download = `${barcodeType}_${text.slice(0, 10).replace(/[^a-z0-9]/gi, "_")}.png`;
     a.click();
+  };
+
+  const handleCopyPng = async () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    try {
+      const blob = await new Promise<Blob | null>(resolve => 
+        canvas.toBlob(resolve, 'image/png')
+      );
+      if (blob) {
+        const item = new ClipboardItem({ 'image/png': blob });
+        await navigator.clipboard.write([item]);
+        setPngCopied(true);
+        setTimeout(() => setPngCopied(false), 2000);
+      }
+    } catch {
+      setError("画像のコピーに失敗しました。");
+    }
   };
 
   const handleDownloadSvg = async () => {
@@ -182,7 +200,7 @@ export default function BarcodePage() {
         options.height = 15;
       }
 
-      const svg = bwipjs.toSVG(options);
+      const svg = (bwipjs as any).toSVG(options);
 
       const blob = new Blob([svg], { type: "image/svg+xml" });
       const url = URL.createObjectURL(blob);
@@ -205,19 +223,20 @@ export default function BarcodePage() {
   const selectedType = BARCODE_TYPES.find((t) => t.value === barcodeType);
 
   return (
-    <div className="p-4 md:p-6 max-w-5xl mx-auto">
-      <div className="mb-8">
-        <h2 className="text-3xl font-black text-white bg-gradient-to-r from-rose-400 to-pink-500 text-transparent bg-clip-text">
+    <div className="p-4 md:p-6 w-full max-w-[1400px] mx-auto space-y-6">
+      <div className="mb-2">
+        <h2 className="text-2xl font-extrabold text-white bg-gradient-to-r from-rose-400 to-pink-500 text-transparent bg-clip-text">
           Barcode &amp; QR Generator
         </h2>
-        <p className="text-zinc-400 text-sm mt-1">
+        <p className="text-zinc-400 text-sm mt-0.5">
           様々な形式のバーコードとQRコードを即座に生成。SVG/PNGで保存可能。
         </p>
       </div>
+      <Separator className="bg-zinc-800/50" />
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
         {/* Settings - 7 cols */}
-        <div className="lg:col-span-7 space-y-6">
+        <div className="xl:col-span-7 space-y-6">
           {/* Barcode type grid */}
           <div className="space-y-3">
             <Label className="text-zinc-300 text-xs font-bold uppercase tracking-wider">形式を選択</Label>
@@ -350,7 +369,16 @@ export default function BarcodePage() {
           )}
 
           {/* Action Buttons */}
-          <div className="grid grid-cols-2 gap-4 pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+            <Button
+              onClick={handleCopyPng}
+              disabled={!!error || !text.trim()}
+              variant="outline"
+              className="h-12 border-zinc-800 hover:bg-zinc-800 text-zinc-300 rounded-xl font-bold gap-2 transition-all active:scale-[0.98]"
+            >
+              {pngCopied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-rose-400" />}
+              {pngCopied ? "コピー済" : "画像をコピー"}
+            </Button>
             <Button
               onClick={handleDownloadPng}
               disabled={!!error || !text.trim()}
@@ -363,7 +391,7 @@ export default function BarcodePage() {
             <Button
               onClick={handleDownloadSvg}
               disabled={!!error || !text.trim()}
-              className="h-12 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold gap-2 shadow-lg shadow-rose-900/20 transition-all active:scale-[0.98]"
+              className="h-12 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold gap-2 shadow-lg shadow-rose-900/20 transition-all active:scale-[0.98] sm:col-span-1"
             >
               <Download className="w-4 h-4" />
               SVG 保存
@@ -372,7 +400,7 @@ export default function BarcodePage() {
         </div>
 
         {/* Preview Area - 5 cols */}
-        <div className="lg:col-span-5 flex flex-col items-center gap-6 pt-7">
+        <div className="xl:col-span-5 flex flex-col items-center gap-6 pt-7">
           <div className="w-full aspect-square flex flex-col items-center justify-center rounded-[2rem] bg-zinc-900/40 border border-zinc-800/60 p-12 shadow-2xl relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-rose-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
             

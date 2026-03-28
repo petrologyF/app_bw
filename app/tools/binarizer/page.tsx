@@ -1,4 +1,5 @@
 import ImageProcessor from "@/components/ImageProcessor";
+import { Separator } from "@/components/ui/separator";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -8,16 +9,17 @@ export const metadata: Metadata = {
 
 export default function BinarizerPage() {
   return (
-    <div className="h-screen flex flex-col p-4 md:p-6 gap-4 overflow-hidden">
-      <div>
-        <h2 className="text-xl md:text-2xl font-extrabold tracking-tight text-white bg-gradient-to-r from-indigo-400 to-fuchsia-400 text-transparent bg-clip-text">
+    <div className="p-4 md:p-6 w-full max-w-[1400px] mx-auto space-y-6">
+      <div className="mb-2">
+        <h2 className="text-2xl font-extrabold tracking-tight text-white bg-gradient-to-r from-indigo-400 to-fuchsia-400 text-transparent bg-clip-text">
           Image Binarizer
         </h2>
         <p className="text-zinc-400 text-sm mt-0.5">
           高速な画像2値化 &amp; 色置換ツール
         </p>
       </div>
-      <div className="flex-1 min-h-0">
+      <Separator className="bg-zinc-800/50" />
+      <div className="w-full">
         <ImageProcessor />
       </div>
     </div>
