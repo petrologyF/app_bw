@@ -47,16 +47,17 @@ const BARCODE_TYPES = [
   },
 ];
 
-const SIZES = [
-  { label: "S", scale: 2 },
-  { label: "M", scale: 4 },
-  { label: "L", scale: 6 },
+const COLOR_PRESETS = [
+  { name: "白黒", fg: "#000000", bg: "#ffffff" },
+  { name: "アイボリー黒", fg: "#000000", bg: "#f8f7e9" },
+  { name: "淡グレー", fg: "#ced0d2", bg: "#f8f7e9" },
+  { name: "青写真", fg: "#1e3a8a", bg: "#eff6ff" },
+  { name: "セピア", fg: "#432818", bg: "#fefae0" },
 ];
 
 export default function BarcodePage() {
   const [text, setText] = useState("https://example.com");
   const [barcodeType, setBarcodeType] = useState("qrcode");
-  const [sizeLabel, setSizeLabel] = useState("M");
   const [fgColor, setFgColor] = useState("#000000");
   const [bgColor, setBgColor] = useState("#ffffff");
   const [error, setError] = useState<string | null>(null);
@@ -66,8 +67,8 @@ export default function BarcodePage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const getScale = useCallback(() => {
-    return SIZES.find((s) => s.label === sizeLabel)?.scale || 4;
-  }, [sizeLabel]);
+    return 4; // サイズは常にM (scale 4)
+  }, []);
 
   const generateBarcode = useCallback(async () => {
     if (!canvasRef.current) return;
@@ -299,29 +300,8 @@ export default function BarcodePage() {
             </div>
           </div>
 
-          {/* Controls: Color & Size - 3 Column Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Size Toggle */}
-            <div className="space-y-3">
-              <Label className="text-zinc-300 text-[10px] font-bold uppercase tracking-widest pl-1">サイズ</Label>
-              <div className="flex bg-zinc-900 p-1.5 rounded-xl border border-zinc-800 h-12">
-                {SIZES.map((s) => (
-                  <button
-                    key={s.label}
-                    onClick={() => setSizeLabel(s.label)}
-                    className={cn(
-                      "flex-1 text-xs font-bold rounded-lg transition-all",
-                      sizeLabel === s.label
-                        ? "bg-zinc-800 text-rose-400 shadow-sm"
-                        : "text-zinc-600 hover:text-zinc-400"
-                    )}
-                  >
-                    {s.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
+          {/* Controls: Color - 2 Column Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Colors: FG */}
             <div className="space-y-3">
               <Label className="text-zinc-300 text-[10px] font-bold uppercase tracking-widest pl-1">前景色</Label>
@@ -341,8 +321,8 @@ export default function BarcodePage() {
               </div>
             </div>
 
-             {/* Colors: BG */}
-             <div className="space-y-3">
+            {/* Colors: BG */}
+            <div className="space-y-3">
               <Label className="text-zinc-300 text-[10px] font-bold uppercase tracking-widest pl-1">背景色</Label>
               <div className="flex items-center gap-2 p-1.5 bg-zinc-900 border border-zinc-800 rounded-xl h-12">
                 <input
@@ -358,6 +338,29 @@ export default function BarcodePage() {
                   className="flex-1 bg-transparent text-zinc-300 text-[11px] font-mono focus:outline-none uppercase"
                 />
               </div>
+            </div>
+          </div>
+
+          {/* Color Presets */}
+          <div className="space-y-3">
+            <Label className="text-zinc-300 text-[10px] font-bold uppercase tracking-widest pl-1">配色プリセット</Label>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+              {COLOR_PRESETS.map((p) => (
+                <button
+                  key={p.name}
+                  onClick={() => {
+                    setFgColor(p.fg);
+                    setBgColor(p.bg);
+                  }}
+                  className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-all group"
+                >
+                  <div className="w-full h-4 rounded-full flex overflow-hidden ring-1 ring-zinc-800 shadow-inner">
+                    <div style={{ backgroundColor: p.fg }} className="w-1/2 h-full" />
+                    <div style={{ backgroundColor: p.bg }} className="w-1/2 h-full" />
+                  </div>
+                  <span className="text-[9px] text-zinc-500 group-hover:text-zinc-300 transition-colors uppercase font-bold">{p.name}</span>
+                </button>
+              ))}
             </div>
           </div>
 
