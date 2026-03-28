@@ -104,6 +104,7 @@ export default function BarcodePage() {
         }
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const options: any = {
         bcid: activeBcid,
         text: finalUpdateText,
@@ -186,6 +187,7 @@ export default function BarcodePage() {
         }
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const options: any = {
         bcid: activeBcid,
         text: finalUpdateText,
@@ -201,6 +203,7 @@ export default function BarcodePage() {
         options.height = 15;
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const svg = (bwipjs as any).toSVG(options);
 
       const blob = new Blob([svg], { type: "image/svg+xml" });
@@ -210,7 +213,7 @@ export default function BarcodePage() {
       a.download = `${barcodeType}_${text.slice(0, 10).replace(/[^a-z0-9]/gi, "_")}.svg`;
       a.click();
       URL.revokeObjectURL(url);
-    } catch (e) {
+    } catch {
       setError("Failed to generate SVG.");
     }
   };

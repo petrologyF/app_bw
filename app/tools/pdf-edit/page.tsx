@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { 
   FileText, 
   UploadCloud, 
@@ -21,7 +21,7 @@ import { PDFDocument } from "pdf-lib";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
@@ -114,6 +114,7 @@ export default function PdfEditPage() {
         const copied = await newDoc.copyPages(srcDoc, pages);
         copied.forEach((p) => newDoc.addPage(p));
         const bytes = await newDoc.save();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const blob = new Blob([bytes as any], { type: "application/pdf" });
         const url = URL.createObjectURL(blob);
         const label = pages.length === 1 ? `p${pages[0] + 1}` : `p${pages[0] + 1}-${pages[pages.length - 1] + 1}`;
@@ -178,6 +179,7 @@ export default function PdfEditPage() {
         setProgress(Math.round(((i + 1) / mergeFiles.length) * 90));
       }
       const bytes = await mergedDoc.save();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setMergeResultUrl(URL.createObjectURL(new Blob([bytes as any], { type: "application/pdf" })));
       setProgress(100);
     } catch {
@@ -236,6 +238,7 @@ export default function PdfEditPage() {
         canvas.width = vp.width;
         canvas.height = vp.height;
         if (ctx) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           await page.render({ canvasContext: ctx, viewport: vp } as any).promise;
           res.push({ page: i, dataUrl: canvas.toDataURL("image/png") });
         }
@@ -483,6 +486,7 @@ export default function PdfEditPage() {
               <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
                 {imgResults.map(r => (
                   <div key={r.page} className="group relative aspect-[3/4] rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-900/80">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={r.dataUrl} alt={`Page ${r.page}`} className="w-full h-full object-contain p-2" />
                     <div className="absolute inset-0 bg-zinc-950/80 flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-all px-2">
                        <div className="flex gap-2">
