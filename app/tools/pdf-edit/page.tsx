@@ -70,7 +70,7 @@ export default function PdfEditPage() {
   // Helper: File Size Check
   const validateFileSize = (file: File) => {
     if (file.size > MAX_FILE_SIZE) {
-      setError(`ファイルサイズが大きすぎます (最大 100MB)。選択されたファイル: ${(file.size / 1024 / 1024).toFixed(1)}MB`);
+      setError(`File size too large (Max 100MB). Selected file: ${(file.size / 1024 / 1024).toFixed(1)}MB`);
       return false;
     }
     return true;
@@ -78,7 +78,7 @@ export default function PdfEditPage() {
 
   // --- Split Logic ---
   const loadSplitFile = async (f: File) => {
-    if (f.type !== "application/pdf") return setError("PDFファイルを選択してください。");
+    if (f.type !== "application/pdf") return setError("Please select a valid PDF file.");
     if (!validateFileSize(f)) return;
     setError(null);
     setSplitResults([]);
@@ -89,7 +89,7 @@ export default function PdfEditPage() {
       setSplitPageCount(doc.getPageCount());
       setSplitRanges(`1-${doc.getPageCount()}`);
     } catch {
-      setError("PDFの読み込みに失敗しました。");
+      setError("Failed to load PDF.");
       setSplitFile(null);
     }
   };
@@ -99,7 +99,7 @@ export default function PdfEditPage() {
     setError(null);
     const parsed = parseRanges(splitRanges, splitPageCount);
     if (!parsed) {
-      setError(`無効な範囲指定です。例: "1-3, 5, 7-10"`);
+      setError(`Invalid range format. Example: "1-3, 5, 7-10"`);
       return;
     }
     setIsProcessing(true);
@@ -122,7 +122,7 @@ export default function PdfEditPage() {
       }
       setSplitResults(newResults);
     } catch {
-      setError("PDF分割中にエラーが発生しました。");
+      setError("An error occurred during PDF splitting.");
     } finally {
       setIsProcessing(false);
     }
@@ -158,13 +158,13 @@ export default function PdfEditPage() {
         const doc = await PDFDocument.load(buf);
         setMergeFiles(prev => [...prev, { id: crypto.randomUUID(), file: f, pageCount: doc.getPageCount() }]);
       } catch {
-        setError(`"${f.name}" の読み込みに失敗しました。`);
+        setError(`Failed to load "${f.name}".`);
       }
     }
   };
 
   const handleMerge = async () => {
-    if (mergeFiles.length < 2) return setError("結合するには2つ以上のPDFが必要です。");
+    if (mergeFiles.length < 2) return setError("At least 2 PDFs are required to merge.");
     setError(null);
     setIsProcessing(true);
     setProgress(0);
@@ -181,7 +181,7 @@ export default function PdfEditPage() {
       setMergeResultUrl(URL.createObjectURL(new Blob([bytes as any], { type: "application/pdf" })));
       setProgress(100);
     } catch {
-      setError("PDF結合中にエラーが発生しました。");
+      setError("An error occurred during PDF merging.");
     } finally {
       setIsProcessing(false);
     }
@@ -200,7 +200,7 @@ export default function PdfEditPage() {
 
   // --- Image Logic ---
   const loadImgFile = async (f: File) => {
-    if (f.type !== "application/pdf") return setError("PDFファイルを選択してください。");
+    if (f.type !== "application/pdf") return setError("Please select a valid PDF file.");
     if (!validateFileSize(f)) return;
     setError(null);
     setImgResults([]);
@@ -212,7 +212,7 @@ export default function PdfEditPage() {
       const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
       setImgPageCount(pdf.numPages);
     } catch {
-      setError("PDFの読み込みに失敗しました。");
+      setError("Failed to load PDF.");
       setImgFile(null);
     }
   };
@@ -243,7 +243,7 @@ export default function PdfEditPage() {
       }
       setImgResults(res);
     } catch {
-      setError("画像変換中にエラーが発生しました。");
+      setError("An error occurred during PDF conversion.");
     } finally {
       setIsProcessing(false);
     }
@@ -258,7 +258,7 @@ export default function PdfEditPage() {
       setCopiedPage(pageNum);
       setTimeout(() => setCopiedPage(null), 2000);
     } catch {
-      setError("画像のコピーに失敗しました。");
+      setError("Failed to copy image.");
     }
   };
 
@@ -269,18 +269,18 @@ export default function PdfEditPage() {
           <h2 className="text-2xl font-extrabold text-white bg-gradient-to-r from-amber-400 to-orange-400 text-transparent bg-clip-text">
             Edit PDF
           </h2>
-          <p className="text-zinc-400 text-sm mt-0.5">PDFの抽出・結合・画像化（最大80MB）</p>
+          <p className="text-zinc-400 text-sm mt-0.5">Split, Merge, &amp; Convert PDFs (Max 100MB)</p>
         </div>
         <Tabs defaultValue="split" onValueChange={setActiveTab} className="w-full md:w-auto">
           <TabsList className="bg-zinc-900 border border-zinc-800 p-1 rounded-xl">
             <TabsTrigger value="split" className="gap-2 rounded-lg data-[state=active]:bg-zinc-800 data-[state=active]:text-blue-400">
-              <Scissors className="w-3.5 h-3.5" /> 分割
+              <Scissors className="w-3.5 h-3.5" /> Split
             </TabsTrigger>
             <TabsTrigger value="merge" className="gap-2 rounded-lg data-[state=active]:bg-zinc-800 data-[state=active]:text-emerald-400">
-              <FilePlus2 className="w-3.5 h-3.5" /> 結合
+              <FilePlus2 className="w-3.5 h-3.5" /> Merge
             </TabsTrigger>
             <TabsTrigger value="image" className="gap-2 rounded-lg data-[state=active]:bg-zinc-800 data-[state=active]:text-sky-400">
-              <FileImage className="w-3.5 h-3.5" /> 画像化
+              <FileImage className="w-3.5 h-3.5" /> Convert to Image
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -314,11 +314,11 @@ export default function PdfEditPage() {
               {splitFile ? (
                 <div className="text-center truncate max-w-full">
                   <p className="text-zinc-100 font-bold truncate px-4">{splitFile.name}</p>
-                  <Badge variant="outline" className="mt-2 border-zinc-700 text-zinc-500 uppercase tracking-tighter">{splitPageCount} ページ</Badge>
+                  <Badge variant="outline" className="mt-2 border-zinc-700 text-zinc-500 uppercase tracking-tighter">{splitPageCount} Pages</Badge>
                 </div>
               ) : (
                 <div className="text-center">
-                  <p className="text-zinc-300 font-bold text-lg">PDFを抽出</p>
+                  <p className="text-zinc-300 font-bold text-lg">Extract Pages</p>
                   <p className="text-zinc-500 text-xs mt-1 uppercase tracking-widest font-black">Drop file center</p>
                 </div>
               )}
@@ -327,17 +327,17 @@ export default function PdfEditPage() {
             {splitFile && (
               <div className="space-y-4 bg-zinc-900/40 p-6 rounded-[2rem] border border-zinc-800">
                 <div className="flex items-center justify-between">
-                  <Label className="text-zinc-300 font-bold">抽出するページ範囲</Label>
+                  <Label className="text-zinc-300 font-bold">Pages to Extract</Label>
                   <Badge className="bg-blue-500/20 text-blue-400 border-none">Total: {splitPageCount}</Badge>
                 </div>
                 <input 
                   type="text" value={splitRanges} onChange={e => setSplitRanges(e.target.value)} 
-                  placeholder="例: 1-3, 5, 7-10"
+                  placeholder="e.g., 1-3, 5, 7-10"
                   className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-5 py-4 text-sm focus:ring-2 focus:ring-blue-500/40 outline-none"
                 />
                 <Button onClick={handleSplit} disabled={isProcessing} className="w-full h-12 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold">
                   {isProcessing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Scissors className="w-4 h-4 mr-2" />}
-                  ページを抽出・保存
+                  Extract &amp; Save
                 </Button>
               </div>
             )}
@@ -374,7 +374,7 @@ export default function PdfEditPage() {
                 <FilePlus2 className="w-8 h-8" />
               </div>
               <div className="text-center">
-                <p className="text-zinc-300 font-bold text-lg">PDFを結合</p>
+                <p className="text-zinc-300 font-bold text-lg">Merge PDFs</p>
                 <p className="text-zinc-500 text-xs mt-1 uppercase tracking-widest font-black">Drag & drop multiple files</p>
               </div>
             </div>
@@ -382,7 +382,7 @@ export default function PdfEditPage() {
             {mergeFiles.length > 0 && (
               <div className="space-y-3">
                  <div className="flex items-center justify-between px-2">
-                    <span className="text-xs font-bold text-zinc-500 tracking-widest uppercase">結合リスト</span>
+                    <span className="text-xs font-bold text-zinc-500 tracking-widest uppercase">Merge List</span>
                     <Badge variant="outline" className="text-emerald-500 border-emerald-500/20">{mergeFiles.length} files</Badge>
                  </div>
                  <div className="space-y-2">
@@ -405,7 +405,7 @@ export default function PdfEditPage() {
                  </div>
                  <Button onClick={handleMerge} disabled={mergeFiles.length < 2 || isProcessing} className="w-full h-14 bg-emerald-600 hover:bg-emerald-500 rounded-[1.2rem] font-black text-lg shadow-xl shadow-emerald-900/20">
                     {isProcessing ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <FilePlus2 className="w-5 h-5 mr-2" />}
-                    PDFを一つのファイルに結合
+                    Merge into One PDF
                  </Button>
               </div>
             )}
@@ -417,7 +417,7 @@ export default function PdfEditPage() {
                     <CheckCircle2 className="w-6 h-6 text-emerald-400" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-emerald-400">結合が完了しました</p>
+                    <p className="text-sm font-bold text-emerald-400">Merge Complete!</p>
                     <p className="text-xs text-emerald-500/60 uppercase font-bold tracking-widest">merged_document.pdf</p>
                   </div>
                 </div>
@@ -445,11 +445,11 @@ export default function PdfEditPage() {
               {imgFile ? (
                 <div className="text-center truncate max-w-full">
                   <p className="text-zinc-100 font-bold truncate px-4">{imgFile.name}</p>
-                  <p className="text-zinc-500 text-xs mt-1 uppercase tracking-tighter">{imgPageCount} ページ</p>
+                  <p className="text-zinc-500 text-xs mt-1 uppercase tracking-tighter">{imgPageCount} Pages</p>
                 </div>
               ) : (
                 <div className="text-center">
-                  <p className="text-zinc-300 font-bold text-lg">PDFを画像化</p>
+                  <p className="text-zinc-300 font-bold text-lg">Convert PDF to Image</p>
                   <p className="text-zinc-500 text-xs mt-1 uppercase tracking-widest font-black">Export to PNG</p>
                 </div>
               )}
@@ -458,7 +458,7 @@ export default function PdfEditPage() {
             {imgFile && (
               <div className="space-y-5 bg-zinc-900/40 p-6 rounded-[2rem] border border-zinc-800">
                 <div className="flex items-center justify-between">
-                  <Label className="text-zinc-300 font-bold">解像度設定</Label>
+                  <Label className="text-zinc-300 font-bold">Resolution Settings</Label>
                   <Badge className="bg-sky-500/20 text-sky-400 border-none font-mono tracking-tighter uppercase">{Math.round(72 * imgScale)} DPI ({imgScale}x)</Badge>
                 </div>
                 <Slider 
@@ -474,7 +474,7 @@ export default function PdfEditPage() {
                 </div>
                 <Button onClick={handleToImage} disabled={isProcessing} className="w-full h-12 bg-sky-600 hover:bg-sky-500 rounded-xl font-bold">
                   {isProcessing ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <ArrowRight className="w-4 h-4 mr-2" />}
-                  PNG画像に一括変換
+                  Convert All to PNG
                 </Button>
               </div>
             )}

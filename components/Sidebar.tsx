@@ -29,7 +29,7 @@ const tools = [
     label: "Image Binarizer",
     href: "/tools/binarizer",
     icon: ImageIcon,
-    description: "画像を2値化・色置換",
+    description: "Binarize & Replace Colors",
     color: "text-indigo-400",
     activeBg: "bg-indigo-500/10 border-indigo-500/30",
   },
@@ -37,7 +37,7 @@ const tools = [
     label: "Edit PDF",
     href: "/tools/pdf-edit",
     icon: FileEdit,
-    description: "PDFを抽出・結合・画像化",
+    description: "Split, Merge, & Convert PDF",
     color: "text-amber-400",
     activeBg: "bg-amber-500/10 border-amber-500/30",
   },
@@ -45,7 +45,7 @@ const tools = [
     label: "Barcode",
     href: "/tools/barcode",
     icon: Barcode,
-    description: "バーコード & QRコード生成",
+    description: "Generate Barcodes & QR Codes",
     color: "text-rose-400",
     activeBg: "bg-rose-500/10 border-rose-500/30",
   },
@@ -53,7 +53,7 @@ const tools = [
     label: "Text Cleaner",
     href: "/tools/text-cleaner",
     icon: AlignLeft,
-    description: "テキストを整形・クリーン",
+    description: "Format & Clean Text",
     color: "text-teal-400",
     activeBg: "bg-teal-500/10 border-teal-500/30",
   },
@@ -160,11 +160,11 @@ export default function Sidebar() {
             className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-bold py-2.5 px-3 rounded-xl transition-all shadow-lg shadow-indigo-900/30 text-xs ring-1 ring-indigo-500/40 animate-in fade-in zoom-in duration-300"
           >
             <MonitorDown className="w-4 h-4" />
-            デスクトップアプリとして保存
+            Install Desktop App
           </button>
         )}
         <p className="text-[10px] text-zinc-600 text-center">
-          すべての処理はブラウザ完結 🔒
+          100% Client-Side Processing 🔒
         </p>
       </div>
     </aside>

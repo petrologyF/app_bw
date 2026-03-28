@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Web Utility Hub',
-  description: 'ブラウザで完結するオールインワンWebツール集。PDF変換・QRコード・バーコード・画像処理・テキスト加工など',
+  description: 'An all-in-one browser-based utility suite. Features PDF editing, QR/barcode generation, image processing, and text formatting tools.',
 }
 
 export const viewport = {
@@ -19,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ja" className="dark">
+    <html lang="en" className="dark">
       <body className={`${inter.className} bg-zinc-950 text-zinc-50 min-h-screen antialiased`}>
         {children}
       </body>

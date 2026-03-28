@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Image Binarizer | Web Utility Hub",
-  description: "画像を2値化し、暗部・明部に任意の色を割り当てられる高速画像処理ツール",
+  description: "High-speed binarization and color replacement tool for images",
 };
 
 export default function BinarizerPage() {
@@ -15,7 +15,7 @@ export default function BinarizerPage() {
           Image Binarizer
         </h2>
         <p className="text-zinc-400 text-sm mt-0.5">
-          高速な画像2値化 &amp; 色置換ツール
+          High-speed binarization &amp; color replacement tool
         </p>
       </div>
       <Separator className="bg-zinc-800/50" />

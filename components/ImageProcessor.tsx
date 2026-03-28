@@ -24,7 +24,7 @@ export default function ImageProcessor() {
     if (!file) return;
 
     if (!file.type.match("image/(png|jpeg|jpg|webp)")) {
-      setImageError("PNG/JPEG/WEBP形式の画像を選択してください。");
+      setImageError("Please select a PNG, JPEG, or WEBP image.");
       return;
     }
     setImageError(null);
@@ -42,7 +42,7 @@ export default function ImageProcessor() {
     if (!file) return;
 
     if (!file.type.match("image/(png|jpeg|jpg|webp)")) {
-      setImageError("PNG/JPEG/WEBP形式の画像を選択してください。");
+      setImageError("Please select a PNG, JPEG, or WEBP image.");
       return;
     }
     setImageError(null);
@@ -126,7 +126,7 @@ export default function ImageProcessor() {
         setTimeout(() => setCopied(false), 2000);
       }
     } catch {
-      setImageError("画像のコピーに失敗しました。このブラウザではサポートされていない可能性があります。");
+      setImageError("Failed to copy image. Your browser might not support this feature.");
     }
   };
 
@@ -229,35 +229,35 @@ export default function ImageProcessor() {
               className="px-2 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs font-medium rounded text-zinc-300 transition-colors flex items-center justify-center gap-1.5 ring-1 ring-zinc-700"
             >
               <div className="w-3 h-3 rounded-full flex overflow-hidden ring-1 ring-zinc-500"><div className="w-1/2 bg-black"></div><div className="w-1/2 bg-white"></div></div>
-              白黒
+              Black & White
             </button>
             <button
               onClick={() => { setDarkColor("#000000"); setLightColor("#f8f7e9"); }}
               className="px-2 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs font-medium rounded text-zinc-300 transition-colors flex items-center justify-center gap-1.5 ring-1 ring-zinc-700"
             >
               <div className="w-3 h-3 rounded-full flex overflow-hidden ring-1 ring-zinc-500"><div className="w-1/2 bg-[#000000]"></div><div className="w-1/2 bg-[#f8f7e9]"></div></div>
-              アイボリー黒
+              Black & Ivory
             </button>
             <button
               onClick={() => { setDarkColor("#ced0d2"); setLightColor("#f8f7e9"); }}
               className="px-2 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs font-medium rounded text-zinc-300 transition-colors flex items-center justify-center gap-1.5 ring-1 ring-zinc-700"
             >
               <div className="w-3 h-3 rounded-full flex overflow-hidden ring-1 ring-zinc-500"><div className="w-1/2 bg-[#ced0d2]"></div><div className="w-1/2 bg-[#f8f7e9]"></div></div>
-              淡グレー
+              Light Gray
             </button>
             <button
               onClick={() => { setDarkColor("#1e3a8a"); setLightColor("#eff6ff"); }}
               className="px-2 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs font-medium rounded text-zinc-300 transition-colors flex items-center justify-center gap-1.5 ring-1 ring-zinc-700"
             >
               <div className="w-3 h-3 rounded-full flex overflow-hidden ring-1 ring-zinc-500"><div className="w-1/2 bg-[#1e3a8a]"></div><div className="w-1/2 bg-[#eff6ff]"></div></div>
-              青写真
+              Blueprint
             </button>
             <button
               onClick={() => { setDarkColor("#432818"); setLightColor("#fefae0"); }}
               className="px-2 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs font-medium rounded text-zinc-300 transition-colors flex items-center justify-center gap-1.5 ring-1 ring-zinc-700 col-span-2"
             >
               <div className="w-3 h-3 rounded-full flex overflow-hidden ring-1 ring-zinc-500"><div className="w-1/2 bg-[#432818]"></div><div className="w-1/2 bg-[#fefae0]"></div></div>
-              セピア
+              Sepia
             </button>
           </div>
         </div>
@@ -310,7 +310,7 @@ export default function ImageProcessor() {
               <UploadCloud className="w-8 h-8" />
             </div>
             <div className="text-center">
-              <p className="text-zinc-200 font-medium">クリックまたはドロップして画像をアップロード</p>
+              <p className="text-zinc-200 font-medium">Click or drop an image here to upload</p>
             </div>
           </div>
         ) : (

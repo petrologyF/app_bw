@@ -13,46 +13,46 @@ const BARCODE_TYPES = [
     value: "qrcode", 
     label: "QR Code", 
     example: "https://example.com",
-    description: "文献へのリンク、学会ポスター、連絡先交換、電子決済。"
+    description: "Links to literature, conference posters, contact exchange, e-payments."
   },
   { 
     value: "ean13", 
     label: "EAN-13 (JAN)", 
     example: "4901234567894",
-    description: "日本国内での市販製品（試薬・備品）の購入・管理。"
+    description: "Purchase & management of commercial products in Japan."
   },
   { 
     value: "upca", 
     label: "UPC-A", 
     example: "012345678905",
-    description: "米国製ソフトウェアや機材、輸入品の管理。"
+    description: "Management of US software, equipment, or imported goods."
   },
   { 
     value: "code128", 
     label: "CODE 128", 
     example: "LAB-999-XYZ",
-    description: "研究室の在庫管理。英数字を扱えるため、検体IDの管理に最適。"
+    description: "Lab inventory. Alphanumeric support makes it ideal for sample IDs."
   },
   { 
     value: "datamatrix", 
     label: "Data Matrix", 
     example: "SN-2026-X1",
-    description: "微小物の管理。マイクロチューブの底面や小型電子部品の識別。"
+    description: "Micro-object tracking. Microtube bases or tiny electronic parts."
   },
   { 
     value: "isbn", 
     label: "ISBN / ISSN", 
     example: "9784000088275",
-    description: "図書（ISBN）や学術雑誌（ISSN）の特定と文献管理。"
+    description: "Identification and reference management for books and journals."
   },
 ];
 
 const COLOR_PRESETS = [
-  { name: "白黒", fg: "#000000", bg: "#ffffff" },
-  { name: "アイボリー黒", fg: "#000000", bg: "#f8f7e9" },
-  { name: "淡グレー", fg: "#ced0d2", bg: "#f8f7e9" },
-  { name: "青写真", fg: "#1e3a8a", bg: "#eff6ff" },
-  { name: "セピア", fg: "#432818", bg: "#fefae0" },
+  { name: "Black & White", fg: "#000000", bg: "#ffffff" },
+  { name: "Black & Ivory", fg: "#000000", bg: "#f8f7e9" },
+  { name: "Light Gray", fg: "#ced0d2", bg: "#f8f7e9" },
+  { name: "Blueprint", fg: "#1e3a8a", bg: "#eff6ff" },
+  { name: "Sepia", fg: "#432818", bg: "#fefae0" },
 ];
 
 export default function BarcodePage() {
@@ -124,7 +124,7 @@ export default function BarcodePage() {
 
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e);
-      setError(`生成エラー: ${msg}`);
+      setError(`Generation error: ${msg}`);
       
       // エラー時は古いバーコードを消去
       const ctx = canvasRef.current.getContext("2d");
@@ -160,7 +160,7 @@ export default function BarcodePage() {
         setTimeout(() => setPngCopied(false), 2000);
       }
     } catch {
-      setError("画像のコピーに失敗しました。");
+      setError("Failed to copy image.");
     }
   };
 
@@ -211,7 +211,7 @@ export default function BarcodePage() {
       a.click();
       URL.revokeObjectURL(url);
     } catch (e) {
-      setError("SVG生成に失敗しました。");
+      setError("Failed to generate SVG.");
     }
   };
 
@@ -230,7 +230,7 @@ export default function BarcodePage() {
           Barcode &amp; QR Generator
         </h2>
         <p className="text-zinc-400 text-sm mt-0.5">
-          様々な形式のバーコードとQRコードを即座に生成。SVG/PNGで保存可能。
+          Generate various formats instantly. Save as SVG/PNG.
         </p>
       </div>
       <Separator className="bg-zinc-800/50" />
@@ -240,7 +240,7 @@ export default function BarcodePage() {
         <div className="xl:col-span-7 space-y-6">
           {/* Barcode type grid */}
           <div className="space-y-3">
-            <Label className="text-zinc-300 text-xs font-bold uppercase tracking-wider">形式を選択</Label>
+            <Label className="text-zinc-300 text-xs font-bold uppercase tracking-wider">Select Format</Label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {BARCODE_TYPES.map((t) => (
                 <button
@@ -273,13 +273,13 @@ export default function BarcodePage() {
           {/* Text input */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label className="text-zinc-300 text-xs font-bold uppercase tracking-wider">テキストデータ</Label>
+              <Label className="text-zinc-300 text-xs font-bold uppercase tracking-wider">Text Data</Label>
               <button
                 onClick={copyText}
                 className="text-[10px] flex items-center gap-1 text-zinc-500 hover:text-zinc-300 transition-colors"
               >
                 {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                {copied ? "コピーしました" : "サンプルをコピー"}
+                {copied ? "Copied" : "Copy Sample"}
               </button>
             </div>
             <div className="relative">
@@ -287,7 +287,7 @@ export default function BarcodePage() {
                 type="text"
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                placeholder="内容を入力..."
+                placeholder="Enter content..."
                 className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3.5 text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/40 transition-shadow transition-colors"
               />
               {selectedType && (
@@ -304,7 +304,7 @@ export default function BarcodePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Colors: FG */}
             <div className="space-y-3">
-              <Label className="text-zinc-300 text-[10px] font-bold uppercase tracking-widest pl-1">前景色</Label>
+              <Label className="text-zinc-300 text-[10px] font-bold uppercase tracking-widest pl-1">Foreground</Label>
               <div className="flex items-center gap-2 p-1.5 bg-zinc-900 border border-zinc-800 rounded-xl h-12">
                 <input
                   type="color"
@@ -323,7 +323,7 @@ export default function BarcodePage() {
 
             {/* Colors: BG */}
             <div className="space-y-3">
-              <Label className="text-zinc-300 text-[10px] font-bold uppercase tracking-widest pl-1">背景色</Label>
+              <Label className="text-zinc-300 text-[10px] font-bold uppercase tracking-widest pl-1">Background</Label>
               <div className="flex items-center gap-2 p-1.5 bg-zinc-900 border border-zinc-800 rounded-xl h-12">
                 <input
                   type="color"
@@ -343,7 +343,7 @@ export default function BarcodePage() {
 
           {/* Color Presets */}
           <div className="space-y-3">
-            <Label className="text-zinc-300 text-[10px] font-bold uppercase tracking-widest pl-1">配色プリセット</Label>
+            <Label className="text-zinc-300 text-[10px] font-bold uppercase tracking-widest pl-1">Color Presets</Label>
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
               {COLOR_PRESETS.map((p) => (
                 <button
@@ -380,7 +380,7 @@ export default function BarcodePage() {
               className="h-12 border-zinc-800 hover:bg-zinc-800 text-zinc-300 rounded-xl font-bold gap-2 transition-all active:scale-[0.98]"
             >
               {pngCopied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-rose-400" />}
-              {pngCopied ? "コピー済" : "画像をコピー"}
+              {pngCopied ? "Copied" : "Copy Image"}
             </Button>
             <Button
               onClick={handleDownloadPng}
@@ -389,7 +389,7 @@ export default function BarcodePage() {
               className="h-12 border-zinc-800 hover:bg-zinc-800 text-zinc-400 rounded-xl font-bold gap-2 transition-all active:scale-[0.98]"
             >
               <Download className="w-4 h-4" />
-              PNG 保存
+              Save PNG
             </Button>
             <Button
               onClick={handleDownloadSvg}
@@ -397,7 +397,7 @@ export default function BarcodePage() {
               className="h-12 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold gap-2 shadow-lg shadow-rose-900/20 transition-all active:scale-[0.98] sm:col-span-1"
             >
               <Download className="w-4 h-4" />
-              SVG 保存
+              Save SVG
             </Button>
           </div>
         </div>
