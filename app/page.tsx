@@ -1,26 +1,21 @@
-import ImageProcessor from '@/components/ImageProcessor'
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace("/tools/binarizer");
+  }, [router]);
+
   return (
-    <main className="min-h-screen p-4 md:p-8 flex flex-col items-center justify-center relative overflow-hidden">
-      
-      {/* Background decoration */}
-      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-indigo-900/20 blur-[120px] rounded-full point-events-none" />
-      <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-fuchsia-900/20 blur-[120px] rounded-full point-events-none" />
-
-      <div className="z-10 w-full max-w-7xl mx-auto mb-8 text-center md:text-left">
-        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-2 bg-gradient-to-r from-indigo-400 to-fuchsia-400 text-transparent bg-clip-text">
-          Binarize & Colorize
-        </h1>
-        <p className="text-zinc-400 text-sm md:text-base">
-          高速な画像2値化 & 色置換ツール
-        </p>
+    <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+        <p className="text-zinc-400 text-sm">読み込み中...</p>
       </div>
-
-      <div className="z-10 w-full flex-grow flex items-center justify-center">
-        <ImageProcessor />
-      </div>
-
-    </main>
-  )
+    </div>
+  );
 }
