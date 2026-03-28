@@ -235,6 +235,50 @@ export default function ImageProcessor() {
           </div>
         </div>
 
+        <div className="w-full h-[1px] bg-zinc-800 my-1"></div>
+
+        {/* プリセット */}
+        <div className="space-y-2">
+          <label className="text-xs font-medium text-zinc-400">Color Presets</label>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => { setDarkColor("#000000"); setLightColor("#ffffff"); }}
+              className="px-2 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs font-medium rounded text-zinc-300 transition-colors flex items-center justify-center gap-1.5 ring-1 ring-zinc-700"
+            >
+              <div className="w-3 h-3 rounded-full flex overflow-hidden ring-1 ring-zinc-500"><div className="w-1/2 bg-black"></div><div className="w-1/2 bg-white"></div></div>
+              白黒
+            </button>
+            <button
+              onClick={() => { setDarkColor("#000000"); setLightColor("#f8f7e9"); }}
+              className="px-2 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs font-medium rounded text-zinc-300 transition-colors flex items-center justify-center gap-1.5 ring-1 ring-zinc-700"
+            >
+              <div className="w-3 h-3 rounded-full flex overflow-hidden ring-1 ring-zinc-500"><div className="w-1/2 bg-[#000000]"></div><div className="w-1/2 bg-[#f8f7e9]"></div></div>
+              アイボリー黒
+            </button>
+            <button
+              onClick={() => { setDarkColor("#ced0d2"); setLightColor("#f8f7e9"); }}
+              className="px-2 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs font-medium rounded text-zinc-300 transition-colors flex items-center justify-center gap-1.5 ring-1 ring-zinc-700"
+            >
+              <div className="w-3 h-3 rounded-full flex overflow-hidden ring-1 ring-zinc-500"><div className="w-1/2 bg-[#ced0d2]"></div><div className="w-1/2 bg-[#f8f7e9]"></div></div>
+              淡グレー
+            </button>
+            <button
+              onClick={() => { setDarkColor("#1e3a8a"); setLightColor("#eff6ff"); }}
+              className="px-2 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs font-medium rounded text-zinc-300 transition-colors flex items-center justify-center gap-1.5 ring-1 ring-zinc-700"
+            >
+              <div className="w-3 h-3 rounded-full flex overflow-hidden ring-1 ring-zinc-500"><div className="w-1/2 bg-[#1e3a8a]"></div><div className="w-1/2 bg-[#eff6ff]"></div></div>
+              青写真
+            </button>
+            <button
+              onClick={() => { setDarkColor("#432818"); setLightColor("#fefae0"); }}
+              className="px-2 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs font-medium rounded text-zinc-300 transition-colors flex items-center justify-center gap-1.5 ring-1 ring-zinc-700 col-span-2"
+            >
+              <div className="w-3 h-3 rounded-full flex overflow-hidden ring-1 ring-zinc-500"><div className="w-1/2 bg-[#432818]"></div><div className="w-1/2 bg-[#fefae0]"></div></div>
+              セピア
+            </button>
+          </div>
+        </div>
+
         <div className="flex-grow"></div>
 
         {/* ダウンロードボタン */}
