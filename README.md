@@ -16,20 +16,18 @@
 - 画像の輝度を計算し、自由な2色（前景色・背景色）に置き換えます。
 - しきい値をリアルタイムで調整し、図録やスケッチのデジタル化に最適です。
 
-### 2. PDF Split (PDF分割)
-- 複数ページのPDFから、必要なページ範囲（例: 1-3, 5）を指定して新しいPDFとして抽出・分割保存します。
+### 2. Edit PDF (PDF編集・変換)
+- **分割 (Split)**: 指定したページ範囲を新しいPDFとして抽出します。
+- **結合 (Merge)**: 複数のPDFをドラッグ＆ドロップで並べ替え、一つに統合します。
+- **画像化 (To PNG)**: PDFの各ページを高画質なPNG画像として一括書き出しします。
+- *※ ブラウザの安定動作のため、1ファイル最大100MBまでの処理に対応しています。*
 
-### 3. PDF Merge (PDF結合)
-- 複数のPDFファイルをドラッグ＆ドロップで並べ替え、一つのPDFファイルに結合します。
-
-### 4. PDF to PNG (PDF画像化)
-- PDFの各ページを、指定した解像度（DPI）で高品質なPNG画像として書き出します。
-
-### 5. Barcode & QR Generator (コード生成)
+### 3. Barcode & QR Generator (コード生成)
 - 6種類の主要形式（QR Code, EAN-13, ISBN等）に対応。
-- 用途に応じた説明付きで、前景色・背景色・サイズを自由にカスタマイズして、PNG/SVG形式で保存できます。
+- 前景色・背景色・サイズを自由にカスタマイズして、PNG/SVG形式で保存できます。
+- バーコード規格に詳しくなくても直感的に使えるよう、主な用途の説明付きです。
 
-### 6. Text Cleaner (テキスト整形)
+### 4. Text Cleaner (テキスト整形)
 - 改行削除、空白除去、タブ変換、全角半角変換など、9種類の整形オプションをリアルタイムで適用します。
 - 論文のコピペやログデータの整形に便利です。
 
@@ -37,16 +35,16 @@
 
 ## 🛡️ プライバシーとセキュリティ
 - **Zero Server Upload**: 本アプリはサーバーサイドのAPIを一切使用しません。すべてのJavaScriptロジックはあなたのブラウザ上で動作します。
-- **PWA Ready**: Service Worker によるキャッシュにより、オフラインでも全機能が利用可能です。
+- **Privacy First**: 銀行の書類や研究データなど、外部に見せたくないファイルも、あなたのPC内だけで安全に処理されます。
 
 ---
 
 ## 🛠️ 技術スタック
 - **Frontend**: [Next.js](https://nextjs.org/) (App Router), TypeScript, Tailwind CSS
-- **UI Components**: shadcn/ui, Radix UI, Lucide Icons
+- **UI Components**: shadcn/ui (Tabs, Slider, etc.), Lucide Icons
 - **PDF Engine**: `pdf-lib`, `pdfjs-dist`
 - **Barcode Engine**: `bwip-js`
-- **Deployment**: GitHub Pages (Static Export)
+- **PWA**: Offline caching with Service Workers
 
 ---
 
@@ -63,8 +61,8 @@ npm run build
 ```
 `out/` ディレクトリに、サーバー不要で動作する静的ファイル一式が生成されます。
 
-## 🏷️ デプロイについて
-GitHub Actions により、`master` または `tools` (開発用) ブランチへのPushで自動的に GitHub Pages へデプロイされます。Next.js の `output: "export"` 設定により、完全に静的なサイトとして稼働します。
+## 🏷️ デプロイ
+GitHub Actions により、`master` ブランチへのPushで自動的に GitHub Pages へデプロイされます。Next.js の `output: "export"` 機能により、完全に静的なサイトとして稼働します。
 
 ---
 Created by [petrologyf](https://github.com/petrologyf)
