@@ -1,5 +1,7 @@
 import type { MetadataRoute } from 'next'
 
+export const dynamic = 'force-static';
+
 export default function manifest(): MetadataRoute.Manifest {
   const isGithubActions = process.env.GITHUB_ACTIONS === 'true';
   const repoString = process.env.GITHUB_REPOSITORY || '';
