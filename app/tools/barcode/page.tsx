@@ -57,8 +57,8 @@ export default function BarcodePage() {
   const [text, setText] = useState("https://example.com");
   const [barcodeType, setBarcodeType] = useState("qrcode");
   const [sizeLabel, setSizeLabel] = useState("M");
-  const [fgColor, setFgColor] = useState("#ffffff");
-  const [bgColor, setBgColor] = useState("#000000");
+  const [fgColor, setFgColor] = useState("#000000");
+  const [bgColor, setBgColor] = useState("#ffffff");
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   
@@ -69,8 +69,16 @@ export default function BarcodePage() {
   }, [sizeLabel]);
 
   const generateBarcode = useCallback(async () => {
-    if (!canvasRef.current || !text.trim()) return;
+    if (!canvasRef.current) return;
     setError(null);
+    
+    // 内容が空の場合はキャンバスをクリアして終了
+    if (!text.trim()) {
+      const ctx = canvasRef.current.getContext("2d");
+      if (ctx) ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+      return;
+    }
+
     try {
       const bwipjs = (await import("bwip-js")).default;
       const is2D = ["qrcode", "datamatrix"].includes(barcodeType);
@@ -87,7 +95,6 @@ export default function BarcodePage() {
           if (digitsOnly.length === 8) {
             activeBcid = "issn";
           } else if (digitsOnly.length === 13) {
-            // ISBN-13はEAN-13と等価。より安定したean13エンコーダーを使用。
             activeBcid = "ean13";
           } else {
             activeBcid = "isbn";
@@ -110,12 +117,16 @@ export default function BarcodePage() {
         options.height = 15;
       }
 
-      // Canvas rendering (for PNG and Preview)
+      // Canvas rendering
       bwipjs.toCanvas(canvasRef.current, options);
 
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e);
       setError(`生成エラー: ${msg}`);
+      
+      // エラー時は古いバーコードを消去
+      const ctx = canvasRef.current.getContext("2d");
+      if (ctx) ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
     }
   }, [text, barcodeType, getScale, fgColor, bgColor]);
 
@@ -269,18 +280,18 @@ export default function BarcodePage() {
             </div>
           </div>
 
-          {/* Controls: Color & Size */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Controls: Color & Size - 3 Column Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Size Toggle */}
             <div className="space-y-3">
-              <Label className="text-zinc-300 text-xs font-bold uppercase tracking-wider">サイズ</Label>
-              <div className="flex bg-zinc-900 p-1 rounded-xl border border-zinc-800">
+              <Label className="text-zinc-300 text-[10px] font-bold uppercase tracking-widest pl-1">サイズ</Label>
+              <div className="flex bg-zinc-900 p-1.5 rounded-xl border border-zinc-800 h-12">
                 {SIZES.map((s) => (
                   <button
                     key={s.label}
                     onClick={() => setSizeLabel(s.label)}
                     className={cn(
-                      "flex-1 py-2 text-sm font-bold rounded-lg transition-all",
+                      "flex-1 text-xs font-bold rounded-lg transition-all",
                       sizeLabel === s.label
                         ? "bg-zinc-800 text-rose-400 shadow-sm"
                         : "text-zinc-600 hover:text-zinc-400"
@@ -292,94 +303,94 @@ export default function BarcodePage() {
               </div>
             </div>
 
-            {/* Colors */}
-            <div className="flex gap-4">
-              <div className="flex-1 space-y-3">
-                <Label className="text-zinc-300 text-xs font-bold uppercase tracking-wider">前景色</Label>
-                <div className="flex items-center gap-2 p-1.5 bg-zinc-900 border border-zinc-800 rounded-xl">
-                  <input
-                    type="color"
-                    value={fgColor}
-                    onChange={(e) => setFgColor(e.target.value)}
-                    className="w-8 h-8 rounded-lg overflow-hidden border-0 bg-transparent cursor-pointer"
-                  />
-                  <input
-                    type="text"
-                    value={fgColor}
-                    onChange={(e) => setFgColor(e.target.value)}
-                    className="flex-1 bg-transparent text-zinc-300 text-xs font-mono focus:outline-none"
-                  />
-                </div>
+            {/* Colors: FG */}
+            <div className="space-y-3">
+              <Label className="text-zinc-300 text-[10px] font-bold uppercase tracking-widest pl-1">前景色</Label>
+              <div className="flex items-center gap-2 p-1.5 bg-zinc-900 border border-zinc-800 rounded-xl h-12">
+                <input
+                  type="color"
+                  value={fgColor}
+                  onChange={(e) => setFgColor(e.target.value)}
+                  className="w-8 h-full rounded-lg overflow-hidden border-0 bg-transparent cursor-pointer"
+                />
+                <input
+                  type="text"
+                  value={fgColor}
+                  onChange={(e) => setFgColor(e.target.value)}
+                  className="flex-1 bg-transparent text-zinc-300 text-[11px] font-mono focus:outline-none uppercase"
+                />
               </div>
-              <div className="flex-1 space-y-3">
-                <Label className="text-zinc-300 text-xs font-bold uppercase tracking-wider">背景色</Label>
-                <div className="flex items-center gap-2 p-1.5 bg-zinc-900 border border-zinc-800 rounded-xl">
-                  <input
-                    type="color"
-                    value={bgColor}
-                    onChange={(e) => setBgColor(e.target.value)}
-                    className="w-8 h-8 rounded-lg overflow-hidden border-0 bg-transparent cursor-pointer"
-                  />
-                  <input
-                    type="text"
-                    value={bgColor}
-                    onChange={(e) => setBgColor(e.target.value)}
-                    className="flex-1 bg-transparent text-zinc-300 text-xs font-mono focus:outline-none"
-                  />
-                </div>
+            </div>
+
+             {/* Colors: BG */}
+             <div className="space-y-3">
+              <Label className="text-zinc-300 text-[10px] font-bold uppercase tracking-widest pl-1">背景色</Label>
+              <div className="flex items-center gap-2 p-1.5 bg-zinc-900 border border-zinc-800 rounded-xl h-12">
+                <input
+                  type="color"
+                  value={bgColor}
+                  onChange={(e) => setBgColor(e.target.value)}
+                  className="w-8 h-full rounded-lg overflow-hidden border-0 bg-transparent cursor-pointer"
+                />
+                <input
+                  type="text"
+                  value={bgColor}
+                  onChange={(e) => setBgColor(e.target.value)}
+                  className="flex-1 bg-transparent text-zinc-300 text-[11px] font-mono focus:outline-none uppercase"
+                />
               </div>
             </div>
           </div>
 
           {error && (
-            <div className="flex items-start gap-2 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl px-4 py-3 text-sm">
+            <div className="flex items-start gap-2 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-xl px-4 py-3 text-sm">
               <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
 
           {/* Action Buttons */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 pt-2">
             <Button
               onClick={handleDownloadPng}
               disabled={!!error || !text.trim()}
               variant="outline"
-              className="h-12 border-rose-500/40 text-rose-400 hover:bg-rose-500/10 rounded-xl font-bold gap-2"
+              className="h-12 border-zinc-800 hover:bg-zinc-800 text-zinc-400 rounded-xl font-bold gap-2 transition-all active:scale-[0.98]"
             >
               <Download className="w-4 h-4" />
-              PNG ダウンロード
+              PNG 保存
             </Button>
             <Button
               onClick={handleDownloadSvg}
               disabled={!!error || !text.trim()}
-              className="h-12 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold gap-2"
+              className="h-12 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold gap-2 shadow-lg shadow-rose-900/20 transition-all active:scale-[0.98]"
             >
               <Download className="w-4 h-4" />
-              SVG ダウンロード
+              SVG 保存
             </Button>
           </div>
         </div>
 
         {/* Preview Area - 5 cols */}
-        <div className="lg:col-span-5 flex flex-col items-center gap-6">
-          <div className="w-full flex flex-col items-center justify-center rounded-3xl bg-zinc-900/60 border border-zinc-800 p-8 min-h-[320px] shadow-2xl relative overflow-hidden group">
+        <div className="lg:col-span-5 flex flex-col items-center gap-6 pt-7">
+          <div className="w-full aspect-square flex flex-col items-center justify-center rounded-[2rem] bg-zinc-900/40 border border-zinc-800/60 p-12 shadow-2xl relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-rose-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
             
             {!text.trim() || error ? (
-              <div className="flex flex-col items-center gap-3 text-zinc-700">
-                <div className="p-4 rounded-full bg-zinc-900 border border-zinc-800">
-                  <Barcode className="w-10 h-10" />
+              <div className="flex flex-col items-center gap-3 text-zinc-800">
+                <div className="p-6 rounded-3xl bg-zinc-900/80 border border-zinc-800 shadow-inner">
+                  <Barcode className="w-12 h-12" />
                 </div>
-                <p className="text-xs font-bold uppercase tracking-widest">{error ? "ERROR" : "Waiting for input"}</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em]">{error ? "ERROR" : "Waiting"}</p>
               </div>
             ) : (
-              <div className="relative z-10 p-4 transition-transform duration-300 group-hover:scale-[1.02]">
+              <div className="relative z-10 w-full h-full flex items-center justify-center transition-all duration-500 group-hover:scale-[1.03]">
                 <canvas
                   ref={canvasRef}
-                  className="max-w-full rounded-lg shadow-xl"
+                  className="max-w-full max-h-full rounded-xl shadow-2xl"
                   style={{ 
                     imageRendering: "pixelated",
-                    boxShadow: `0 20px 50px -12px ${fgColor}20`
+                    boxShadow: `0 30px 60px -12px ${fgColor}25`
                   }}
                 />
               </div>
@@ -387,13 +398,10 @@ export default function BarcodePage() {
           </div>
           
           {!error && text.trim() && (
-            <div className="text-center space-y-1">
-              <Badge className="bg-zinc-800 text-zinc-400 border-zinc-700 hover:bg-zinc-800">
+            <div className="text-center space-y-2">
+              <Badge variant="outline" className="bg-zinc-900/50 text-zinc-500 border-zinc-800 px-3 py-1 text-[10px] tracking-wider uppercase">
                 {selectedType?.label}
               </Badge>
-              <p className="text-[10px] text-zinc-600 font-mono truncate max-w-[200px]">
-                &quot;{text}&quot;
-              </p>
             </div>
           )}
         </div>
