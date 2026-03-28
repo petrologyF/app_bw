@@ -27,13 +27,13 @@
 - *※ ブラウザの安定動作のため、1ファイル最大100MBまでの処理に対応しています。*
 
 ### 3. Barcode & QR Generator (コード生成)
-- 6種類の主要形式（QR Code, EAN-13, ISBN, Data Matrixなど）に対応。
+- 6種類の主要形式（QR Code, EAN-13, UPC-A, CODE 128, Data Matrix, ISBN/ISSN）に対応。
 - 前景色・背景色・サイズを自由にカスタマイズ可能。Binarizerと共通の「青写真」や「セピア」などのカラープリセットも搭載。
 - PNG/SVG形式での保存に加え、生成したコードを直接クリップボードにコピーできます。
 
 ### 4. Text Cleaner (テキスト整形)
-- 改行パターンの正規化、空白除去、タブ変換、大文字/小文字変換など、9種類の整形オプションをリアルタイムで適用します。
-- 論文からの引用時のコピペ処理や、ログデータの整形に便利です。ワンクリックでクリーンアップしたテキストをコピーできます。
+- 改行パターンの正規化、空白除去、タブ変換、大文字/小文字変換、数字・記号の除去など、9種類の整形オプションをリアルタイムで適用します。
+- 論文からの引用時のコピペ処理や、ログデータの整形に便利です。ワンクリックでクリーンアップしたテキストをコピー（Copy）できます。
 
 ---
 
@@ -44,11 +44,11 @@
 ---
 
 ## 🛠️ 技術スタック
-- **Frontend**: [Next.js](https://nextjs.org/) (App Router), TypeScript, Tailwind CSS
-- **UI Components**: shadcn/ui (Tabs, Slider, etc.), Lucide Icons
+- **Frontend**: [Next.js](https://nextjs.org/) 16 (App Router), React 19, TypeScript, Tailwind CSS 4
+- **UI Components**: shadcn/ui (Tabs, Slider, Switch, etc.), Lucide Icons
 - **PDF Engine**: `pdf-lib`, `pdfjs-dist`
 - **Barcode Engine**: `bwip-js`
-- **PWA**: PWA-enabled with offline caching capabilities (next-pwa)
+- **PWA**: PWA-enabled with offline caching capabilities (`@ducanh2912/next-pwa`)
 
 ---
 
