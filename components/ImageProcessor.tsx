@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, ChangeEvent } from "react";
-import { UploadCloud, Download, Image as ImageIcon, DownloadCloud, MonitorDown } from "lucide-react";
+import { UploadCloud, Download, Image as ImageIcon, DownloadCloud, MonitorDown, ArrowDownUp, RefreshCw } from "lucide-react";
 import { rgbToY, hexToRgb } from "@/lib/utils";
 
 // PWAインストールプロンプト用の型定義
@@ -26,6 +26,7 @@ export default function ImageProcessor() {
   const [threshold, setThreshold] = useState<number>(128);
   const [darkColor, setDarkColor] = useState<string>("#000000");
   const [lightColor, setLightColor] = useState<string>("#ffffff");
+  const [isInverted, setIsInverted] = useState<boolean>(false);
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -100,6 +101,12 @@ export default function ImageProcessor() {
     reader.readAsDataURL(file);
   };
 
+  const handleSwapColors = () => {
+    const temp = darkColor;
+    setDarkColor(lightColor);
+    setLightColor(temp);
+  };
+
   // ----- 画像処理ロジック (2値化) -----
   useEffect(() => {
     if (!imageSrc || !canvasRef.current) return;
@@ -123,28 +130,24 @@ export default function ImageProcessor() {
       const parsedDark = hexToRgb(darkColor) || { r: 0, g: 0, b: 0 };
       const parsedLight = hexToRgb(lightColor) || { r: 255, g: 255, b: 255 };
 
-      // Y = 0.299R + 0.587G + 0.114B による輝度算出と置き換え
       for (let i = 0; i < data.length; i += 4) {
         const r = data[i];
         const g = data[i + 1];
         const b = data[i + 2];
         
-        const y = rgbToY(r, g, b); // 外部ユーティリティを使用
+        const y = rgbToY(r, g, b);
         
-        if (y < threshold) {
-          data[i] = parsedDark.r;
-          data[i + 1] = parsedDark.g;
-          data[i + 2] = parsedDark.b;
-        } else {
-          data[i] = parsedLight.r;
-          data[i + 1] = parsedLight.g;
-          data[i + 2] = parsedLight.b;
-        }
+        const isBelowThreshold = y < threshold;
+        const targetColor = (isBelowThreshold !== isInverted) ? parsedDark : parsedLight;
+        
+        data[i] = targetColor.r;
+        data[i + 1] = targetColor.g;
+        data[i + 2] = targetColor.b;
       }
       
       ctx.putImageData(imageData, 0, 0);
     };
-  }, [imageSrc, threshold, darkColor, lightColor]);
+  }, [imageSrc, threshold, darkColor, lightColor, isInverted]);
 
   const handleDownload = () => {
     if (!canvasRef.current || !imageSrc) return;
@@ -194,6 +197,16 @@ export default function ImageProcessor() {
           />
         </div>
 
+        <div className="flex items-center justify-between bg-zinc-800/50 p-3 rounded-lg border border-zinc-800 hover:border-zinc-700 transition-colors cursor-pointer group" onClick={() => setIsInverted(!isInverted)}>
+          <div className="flex items-center gap-2">
+            <RefreshCw className={`w-4 h-4 transition-transform duration-500 ${isInverted ? 'rotate-180 text-indigo-400' : 'text-zinc-400'}`} />
+            <span className="text-sm font-medium text-zinc-300">Invert Palette</span>
+          </div>
+          <div className={`w-10 h-5 rounded-full p-1 transition-colors ${isInverted ? 'bg-indigo-600' : 'bg-zinc-700'}`}>
+            <div className={`w-3 h-3 bg-white rounded-full transition-transform ${isInverted ? 'translate-x-5' : 'translate-x-0'}`} />
+          </div>
+        </div>
+
         <div className="w-full h-[1px] bg-zinc-800 my-2"></div>
 
         {/* カラーピッカー */}
@@ -214,6 +227,17 @@ export default function ImageProcessor() {
                 className="bg-zinc-800 text-zinc-200 text-sm rounded-md px-3 py-2 w-full border border-zinc-700 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
             </div>
+          </div>
+
+          <div className="relative flex justify-center h-4">
+            <div className="absolute top-1/2 left-0 right-0 h-[1px] bg-zinc-800 z-0"></div>
+            <button 
+              onClick={handleSwapColors}
+              className="relative z-10 bg-zinc-900 border border-zinc-700 hover:border-indigo-500 rounded-full p-1.5 text-zinc-400 hover:text-indigo-400 transition-all hover:scale-110 active:scale-95 group shadow-lg"
+              title="Swap Colors"
+            >
+              <ArrowDownUp className="w-3.5 h-3.5 transition-transform group-hover:rotate-180 duration-500" />
+            </button>
           </div>
 
           <div className="space-y-2">
