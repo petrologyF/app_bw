@@ -1,26 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect, ChangeEvent } from "react";
-import { UploadCloud, Download, Image as ImageIcon, DownloadCloud, MonitorDown, ArrowDownUp, RefreshCw } from "lucide-react";
+import { UploadCloud, Download, Image as ImageIcon, Copy, Check, ArrowDownUp, RefreshCw } from "lucide-react";
 import { rgbToY, hexToRgb } from "@/lib/utils";
 
-// PWAインストールプロンプト用の型定義
-interface BeforeInstallPromptEvent extends Event {
-  readonly platforms: string[];
-  readonly userChoice: Promise<{
-    outcome: "accepted" | "dismissed";
-    platform: string;
-  }>;
-  prompt(): Promise<void>;
-}
 
 export default function ImageProcessor() {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
-  
-  // PWAインストール関連のState
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  const [isInstallable, setIsInstallable] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   // パラメータ
   const [threshold, setThreshold] = useState<number>(128);
@@ -29,41 +17,6 @@ export default function ImageProcessor() {
   const [isInverted, setIsInverted] = useState<boolean>(false);
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  // ----- PWA インストールハンドリング -----
-  useEffect(() => {
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault();
-      // イベントを保存して後で引き起こせるようにする
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-      setIsInstallable(true);
-    };
-
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-
-    // インストール完了時のハンドラ
-    const handleAppInstalled = () => {
-      setDeferredPrompt(null);
-      setIsInstallable(false);
-      console.log("PWAとしてインストールされました");
-    };
-    window.addEventListener("appinstalled", handleAppInstalled);
-
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-      window.removeEventListener("appinstalled", handleAppInstalled);
-    };
-  }, []);
-
-  const handleInstallPWA = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === "accepted") {
-      setDeferredPrompt(null);
-      setIsInstallable(false);
-    }
-  };
 
   // ----- 画像読み込みハンドリング -----
   const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
@@ -160,22 +113,28 @@ export default function ImageProcessor() {
     document.body.removeChild(link);
   };
 
-  return (
-    <div className="flex flex-col lg:flex-row h-full w-full max-w-7xl mx-auto rounded-xl overflow-hidden border border-zinc-800 bg-zinc-950/50 backdrop-blur-sm shadow-2xl">
-      {/* 操作パネル */}
-      <div className="w-full lg:w-80 p-6 flex flex-col gap-6 border-b lg:border-b-0 lg:border-r border-zinc-800 bg-zinc-900/80">
-        
-        {/* PWAインストールボタン (インストール可能な場合のみ表示) */}
-        {isInstallable && (
-          <button
-            onClick={handleInstallPWA}
-            className="flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white font-medium py-3 px-4 rounded-xl transition-all shadow-lg shadow-emerald-500/20 text-sm w-full mb-2 animate-in fade-in zoom-in duration-300 ring-1 ring-emerald-400/50"
-          >
-            <MonitorDown className="w-5 h-5" />
-            デスクトップアプリとして保存
-          </button>
-        )}
+  const handleCopyImage = async () => {
+    if (!canvasRef.current || !imageSrc) return;
+    try {
+      const blob = await new Promise<Blob | null>(resolve => 
+        canvasRef.current?.toBlob(resolve, 'image/png')
+      );
+      if (blob) {
+        const item = new ClipboardItem({ 'image/png': blob });
+        await navigator.clipboard.write([item]);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }
+    } catch {
+      setImageError("画像のコピーに失敗しました。このブラウザではサポートされていない可能性があります。");
+    }
+  };
 
+  return (
+    <div className="flex flex-col xl:flex-row w-full min-h-[600px] rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-950/50 backdrop-blur-sm shadow-2xl">
+      {/* 操作パネル */}
+      <div className="w-full xl:w-80 p-6 flex flex-col gap-6 border-b xl:border-b-0 xl:border-r border-zinc-800 bg-zinc-900/80">
+        
         <h2 className="text-xl font-bold font-sans text-zinc-100 flex items-center gap-2">
           <ImageIcon className="w-5 h-5 text-indigo-400" />
           Settings
@@ -303,17 +262,34 @@ export default function ImageProcessor() {
           </div>
         </div>
 
-        <div className="flex-grow"></div>
-
-        {/* ダウンロードボタン */}
-        <button
-          onClick={handleDownload}
-          disabled={!imageSrc}
-          className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/20"
-        >
-          <Download className="w-5 h-5" />
-          Download Image
-        </button>
+        {/* アクションボタン */}
+        <div className="grid grid-cols-2 gap-2 mt-auto">
+          <button
+            onClick={handleCopyImage}
+            disabled={!imageSrc}
+            className="flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-zinc-700 h-12"
+          >
+            {copied ? (
+              <>
+                <Check className="w-5 h-5 text-emerald-400" />
+                Copied!
+              </>
+            ) : (
+              <>
+                <Copy className="w-5 h-5" />
+                Copy
+              </>
+            )}
+          </button>
+          <button
+            onClick={handleDownload}
+            disabled={!imageSrc}
+            className="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/20 h-12"
+          >
+            <Download className="w-5 h-5" />
+            Download
+          </button>
+        </div>
       </div>
 
       {/* プレビュー領域 */}

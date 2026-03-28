@@ -9,9 +9,9 @@ export default function manifest(): MetadataRoute.Manifest {
   const basePath = isGithubActions ? repoName : '';
 
   return {
-    name: 'Image Binarizer',
-    short_name: 'Binarizer',
-    description: 'ブラウザ上で高速に画像を2値化するツール',
+    name: 'Web Utility Hub',
+    short_name: 'WebHub',
+    description: 'PDF変換・QRコード・バーコード・画像2値化など、ブラウザで完結するオールインワンツール集',
     start_url: `${basePath}/`,
     display: 'standalone',
     background_color: '#09090b',
@@ -33,3 +33,4 @@ export default function manifest(): MetadataRoute.Manifest {
     ],
   }
 }
+
