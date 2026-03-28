@@ -4,14 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   ImageIcon,
-  FileText,
-  FilePlus2,
-  FileImage,
-  QrCode,
+  FileEdit,
   Barcode,
   AlignLeft,
-  ChevronRight,
   Layers,
+  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -25,28 +22,12 @@ const tools = [
     activeBg: "bg-indigo-500/10 border-indigo-500/30",
   },
   {
-    label: "PDF Split",
-    href: "/tools/pdf-split",
-    icon: FileText,
-    description: "PDFをページ分割",
+    label: "Edit PDF",
+    href: "/tools/pdf-edit",
+    icon: FileEdit,
+    description: "PDFを抽出・結合・画像化",
     color: "text-amber-400",
     activeBg: "bg-amber-500/10 border-amber-500/30",
-  },
-  {
-    label: "PDF Merge",
-    href: "/tools/pdf-merge",
-    icon: FilePlus2,
-    description: "複数PDFを結合",
-    color: "text-emerald-400",
-    activeBg: "bg-emerald-500/10 border-emerald-500/30",
-  },
-  {
-    label: "PDF to PNG",
-    href: "/tools/pdf-to-png",
-    icon: FileImage,
-    description: "PDFをPNG画像に変換",
-    color: "text-sky-400",
-    activeBg: "bg-sky-500/10 border-sky-500/30",
   },
   {
     label: "Barcode",
