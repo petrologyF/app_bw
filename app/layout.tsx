@@ -7,7 +7,6 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'Image Binarizer Pro',
   description: 'High performance image binarization and color replacement tool',
-  manifest: '/manifest.json',
 }
 
 export const viewport = {

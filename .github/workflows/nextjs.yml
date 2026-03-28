@@ -27,11 +27,6 @@ jobs:
           node-version: "20"
           cache: npm
 
-      - name: Patch manifest.json basePath for GitHub Pages
-        run: |
-          sed -i 's|/icons/|/${{ github.event.repository.name }}/icons/|g' public/manifest.json
-          sed -i 's|"start_url": "/"|"start_url": "/${{ github.event.repository.name }}/"|g' public/manifest.json
-
       - name: Install dependencies
         run: npm ci
 
