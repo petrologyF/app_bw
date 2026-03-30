@@ -209,11 +209,18 @@ export default function PdfEditPage() {
     setImgFile(f);
     try {
       const pdfjsLib = await import("pdfjs-dist");
-      pdfjsLib.GlobalWorkerOptions.workerSrc = "../../pdf.worker.min.mjs";
+      
+      // Robust worker construction for Next.js with potential basePath
+      const basePath = window.location.pathname.includes('/tools/pdf-edit') 
+        ? window.location.pathname.split('/tools/pdf-edit')[0] 
+        : '';
+      pdfjsLib.GlobalWorkerOptions.workerSrc = `${window.location.origin}${basePath}/pdf.worker.min.mjs`;
+
       const buf = await f.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
       setImgPageCount(pdf.numPages);
-    } catch {
+    } catch (err) {
+      console.error("PDF loading error:", err);
       setError("Failed to load PDF.");
       setImgFile(null);
     }
@@ -226,7 +233,12 @@ export default function PdfEditPage() {
     setProgress(0);
     try {
       const pdfjsLib = await import("pdfjs-dist");
-      pdfjsLib.GlobalWorkerOptions.workerSrc = "../../pdf.worker.min.mjs";
+      
+      const basePath = window.location.pathname.includes('/tools/pdf-edit') 
+        ? window.location.pathname.split('/tools/pdf-edit')[0] 
+        : '';
+      pdfjsLib.GlobalWorkerOptions.workerSrc = `${window.location.origin}${basePath}/pdf.worker.min.mjs`;
+
       const buf = await imgFile.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
       const res: PageImage[] = [];
@@ -245,7 +257,8 @@ export default function PdfEditPage() {
         setProgress(Math.round((i / pdf.numPages) * 100));
       }
       setImgResults(res);
-    } catch {
+    } catch (err) {
+      console.error("PDF conversion error:", err);
       setError("An error occurred during PDF conversion.");
     } finally {
       setIsProcessing(false);
